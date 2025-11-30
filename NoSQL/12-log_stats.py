@@ -14,6 +14,9 @@ def main():
 
     # Total number of documents
     total_logs = collection.count_documents({})
+    if total_logs == 0:
+        print("Collection nginx is empty")
+        return
     print(f"{total_logs} logs")
 
     # HTTP methods

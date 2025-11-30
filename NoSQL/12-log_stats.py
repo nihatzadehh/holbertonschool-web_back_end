@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-""" Pretty logs in python with Mongo """
+"""Provides stats about Nginx logs stored in MongoDB"""
 from pymongo import MongoClient
-
-
-def count(mg_col, method):
-    """ Writing an simple count function for reducing the repetition """
-
-    res = mg_col.count_documents({"method": method})
-    return res
 
 if __name__ == "__main__":
     client = MongoClient('mongodb://127.0.0.1:27017')
-    ng_collection = client.logs.nginx
+    collection = client.logs.nginx
 
-    print(f"{ng_collection.count_documents({})} logs")
+    total_logs = collection.count_documents({})
+    print(f"{total_logs} logs")
+
     print("Methods:")
-    for i in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
-        print(f"	method {i}: {count(ng_collection, i)}")
-    print("{} status check".format(ng_collection.count_documents({"path": "/status"})))
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    for m in methods:
+        count = collection.count_documents({"method": m})
+        print(f"\tmethod {m}: {count}")
+
+    status_check = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status_check} status check")
